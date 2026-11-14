@@ -1,0 +1,81 @@
+DATASET:
+  TRAIN:
+    TYPE: LiberoSeerDataset
+    TIMING_CONTRACT: post_action_v1
+    DATA_ROOT: assets/latent_extract/libero/libero_full_consolidated.h5
+    SEQ_LEN: 7
+    FUTURE_STEPS: 3
+    ACTION_PRED_STEPS: 3
+    WINDOW_STRIDE: 8
+    WINDOW_PHASE: random
+    GAP_SET: [4, 8, 16, 32, 64, 120]
+    CAMERAS: ['pixels', 'pixels_wrist']
+    SPLIT: all
+    TRAIN_RATIO: 0.9
+    STRATIFY: True
+    SEED: 3072
+    CROSS_EP_MIN_LANG_DIST: 0.3
+  TEST:
+    TYPE: LiberoSeerDataset
+    TIMING_CONTRACT: post_action_v1
+    DATA_ROOT: assets/latent_extract/libero/libero_full_consolidated.h5
+    SEQ_LEN: 7
+    FUTURE_STEPS: 3
+    ACTION_PRED_STEPS: 3
+    WINDOW_STRIDE: 64
+    WINDOW_PHASE: grid
+    GAP_SET: [4, 8, 16, 32, 64, 120]
+    CAMERAS: ['pixels', 'pixels_wrist']
+    SPLIT: val
+    TRAIN_RATIO: 0.9
+    STRATIFY: True
+    SEED: 3072
+    CROSS_EP_MIN_LANG_DIST: 0.3
+
+DATA_PRESET:
+  IMAGE_SIZE: 128
+
+MODEL:
+  TYPE: SeerPolicyModel
+  HEAD: bc
+  ACTION_STATS_H5: assets/latent_extract/libero/libero_full_consolidated.h5
+  SEER:
+    MAE_CKPT: checkpoints/vit_mae/mae_pretrain_vit_base.pth
+    CLIP_TEXT: assets/seer/clip_text_libero.npz
+    SEQ_LEN: 7
+    FUTURE_STEPS: 3
+    ACTION_PRED_STEPS: 3
+    NUM_RESAMPLER_QUERY: 6
+    NUM_OBS_TOKEN_PER_IMAGE: 9
+    TRANSFORMER_LAYERS: 24
+    HIDDEN_DIM: 384
+    TRANSFORMER_HEADS: 12
+    RGB_PAD: 10
+    GRIPPER_PAD: 4
+    GPT_DROPOUT: 0.1
+  LOSS:
+    ARM: 1.0
+    GRIPPER: 0.01
+    IMAGE: 0.1
+
+TRAIN:
+  MANUAL_SEED: 3072
+  LOG_INTERVAL: 20
+  VAL_LOG_INTERVAL: 20
+  CONV_REPEATABLE: true
+  BATCH_SIZE: 512
+  GRAD_ACCUM: 8
+  EPOCH: 50
+  OPTIMIZER: AdamW
+  LR: 1.0e-3
+  WEIGHT_DECAY: 1.0e-4
+  SCHEDULER: LinearWarmupCosineAnnealingLR
+  SCHEDULER_INTERVAL: step
+  WARMUP_EPOCHS: 5
+  ETA_MIN: 0.0
+  GRAD_CLIP_ENABLED: true
+  GRAD_CLIP:
+    TYPE: 2
+    NORM: 0.1
+    MODE: global_every_backward
+  FIND_UNUSED_PARAMETERS: false

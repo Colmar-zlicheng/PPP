@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Environments
+.venv/
+venv/
+env/
+.python-version
+
+# Hugging Face upload/download metadata
+.cache/
+
+# Editors / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Data, assets and checkpoints (distributed on Hugging Face)
+assets/
+checkpoints/
+data/
+
+# Third-party checkouts
+external/
+
+# Training and evaluation outputs
+exp/
+logs/
+wandb/
+*.log
+MUJOCO_LOG.TXT

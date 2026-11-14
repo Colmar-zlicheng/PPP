@@ -1,0 +1,55 @@
+# Python 3.10, Linux x86_64. Versions match the environment used for the paper results.
+#
+# pip / conda:
+#   conda create -n ppp python=3.10 -y && conda activate ppp      # (conda only)
+#   pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu128
+# uv:
+#   uv venv --python 3.10 && source .venv/bin/activate
+#   uv pip install -r requirements.txt --torch-backend=cu128
+#
+# LIBERO (simulator and benchmark init states) is expected at external/LIBERO:
+#   git clone https://github.com/Lifelong-Robot-Learning/LIBERO.git external/LIBERO
+#   git -C external/LIBERO checkout 8f1084e
+#   pip install -e external/LIBERO --no-deps --config-settings editable_mode=compat
+#   (uv: uv pip install -e external/LIBERO --no-deps --config-settings editable_mode=compat)
+
+# Deep learning
+torch==2.11.0
+torchvision==0.26.0
+transformers==4.51.3
+tokenizers==0.21.4
+safetensors==0.7.0
+huggingface_hub==0.36.2
+timm==1.0.26
+einops==0.8.2
+sentence-transformers==5.6.0
+
+# Data and numerics
+numpy==1.26.4
+scipy==1.15.3
+h5py==3.14.0
+hdf5plugin==6.0.0
+Pillow==12.1.1
+imageio==2.37.3
+imageio-ffmpeg==0.6.0
+matplotlib==3.10.8
+
+# Config, logging, utilities
+PyYAML==6.0.3
+yacs==0.1.8
+tqdm==4.67.1
+termcolor==3.3.0
+GitPython==3.1.46
+tensorboard==2.20.0
+
+# LIBERO simulation runtime
+robosuite==1.4.0
+mujoco==2.3.7
+bddl==1.0.1
+gym==0.25.2
+easydict==1.13
+future==1.0.0
+cloudpickle==3.1.2
+opencv-python==4.11.0.86
+PyOpenGL==3.1.10
+numba==0.66.0

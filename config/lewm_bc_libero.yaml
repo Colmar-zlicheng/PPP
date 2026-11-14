@@ -1,0 +1,109 @@
+DATASET:
+  TRAIN:
+    TYPE: LiberoLeWMGGFieldDataset
+    TIMING_CONTRACT: post_action_v1
+    DATA_ROOT: assets/latent_extract/libero/libero_full_consolidated.h5
+    HISTORY_SIZE: 3
+    NUM_STEPS: 4
+    FRAMESKIP: 4
+    GAP_SET: [1, 2, 4, 8, 16, 30]
+    ANCHOR_STRIDE: 2
+    ANCHOR_PHASE: random
+    EXPERT_CHUNK_REDUCE: mean
+    EXPERT_GRIP_REDUCE: first
+    USE_WRONG_LANG: True
+    CROSS_EP_MIN_LANG_DIST: 0.3
+    EMIT_NEXT_FRAME: True
+    SPLIT_MODE: ratio
+    SPLIT: all
+    TRAIN_RATIO: 0.9
+    STRATIFY: True
+    SEED: 3072
+    CAMERAS: ['pixels', 'pixels_wrist']
+    IN_MEMORY: True
+    SHM_CACHE: True
+    ACTION_SOURCE: osc
+    NORMALIZE_ACTIONS: True
+    TRANSFORM:
+      TYPE: IdentityTransform
+  TEST:
+    TYPE: LiberoLeWMGGFieldDataset
+    TIMING_CONTRACT: post_action_v1
+    DATA_ROOT: assets/latent_extract/libero/libero_full_consolidated.h5
+    HISTORY_SIZE: 3
+    NUM_STEPS: 4
+    FRAMESKIP: 4
+    GAP_SET: [1, 2, 4, 8, 16, 30]
+    ANCHOR_STRIDE: 8
+    EXPERT_CHUNK_REDUCE: mean
+    EXPERT_GRIP_REDUCE: first
+    USE_WRONG_LANG: True
+    CROSS_EP_MIN_LANG_DIST: 0.3
+    EMIT_NEXT_FRAME: True
+    SPLIT_MODE: ratio
+    SPLIT: val
+    TRAIN_RATIO: 0.9
+    STRATIFY: True
+    SEED: 3072
+    CAMERAS: ['pixels', 'pixels_wrist']
+    IN_MEMORY: True
+    SHM_CACHE: True
+    ACTION_SOURCE: osc
+    NORMALIZE_ACTIONS: True
+    TRANSFORM:
+      TYPE: IdentityTransform
+
+DATA_PRESET:
+  IMAGE_SIZE: 128
+  PATCH_SIZE: 16
+
+MODEL:
+  TYPE: LeWMBCModel
+  LEWM_CONFIG: config/lewm_wm_libero.yaml
+  LEWM_CKPT: checkpoints/lewm_wm_libero/checkpoints/checkpoint_100
+
+  WORLD_MODEL_TRAIN:
+    ENABLED: true
+    START_EPOCH: 10
+    BN_MODE: train
+
+  LANG_DIM: 384
+  HIDDEN_DIM: 1024
+  NUM_LAYERS: 4
+  FILM_HIDDEN: 256
+  DROPOUT: 0.0
+
+  ACT_SUPERVISION:
+    CTX_ACTION_BASE: median
+    CTX_IMAGE_BASE: history
+
+  GRIPPER_HEAD:
+    ENABLED: true
+    HIDDEN_DIM: 256
+
+  LOSS:
+    LAMBDA_VEC: 1.0
+    LAMBDA_DIR: 1.0
+    LAMBDA_GRIP: 1.0
+    LAMBDA_WM: 1.0
+
+TRAIN:
+  MANUAL_SEED: 3072
+  LOG_INTERVAL: 20
+  VAL_LOG_INTERVAL: 20
+  COLLAPSE_LOG_INTERVAL: 100
+  CONV_REPEATABLE: true
+  BATCH_SIZE: 512
+  EPOCH: 200
+  OPTIMIZER: AdamW
+  LR: 3.0e-4
+  WM_LR: 5.0e-5
+  WEIGHT_DECAY: 1.0e-3
+  SCHEDULER: LinearWarmupCosineAnnealingLR
+  WARMUP_EPOCHS: 5
+  ETA_MIN: 3.0e-5
+  GRAD_CLIP_ENABLED: true
+  GRAD_CLIP:
+    TYPE: 2
+    NORM: 1.0
+  FIND_UNUSED_PARAMETERS: false

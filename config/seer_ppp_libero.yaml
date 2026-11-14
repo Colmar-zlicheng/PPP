@@ -1,0 +1,133 @@
+DATASET:
+  TRAIN:
+    TYPE: LiberoSeerDataset
+    TIMING_CONTRACT: post_action_v1
+    DATA_ROOT: assets/latent_extract/libero/libero_full_consolidated.h5
+    SEQ_LEN: 7
+    FUTURE_STEPS: 3
+    ACTION_PRED_STEPS: 3
+    WINDOW_STRIDE: 8
+    WINDOW_PHASE: random
+    GAP_SET: [4, 8, 16, 32, 64, 120]
+    CAMERAS: ['pixels', 'pixels_wrist']
+    SPLIT: all
+    TRAIN_RATIO: 0.9
+    STRATIFY: True
+    SEED: 3072
+    CROSS_EP_MIN_LANG_DIST: 0.3
+    LATER_WINDOW: True
+    LATER_WINDOW_END: frame
+    FUTURE_STATES: True
+  TEST:
+    TYPE: LiberoSeerDataset
+    TIMING_CONTRACT: post_action_v1
+    DATA_ROOT: assets/latent_extract/libero/libero_full_consolidated.h5
+    SEQ_LEN: 7
+    FUTURE_STEPS: 3
+    ACTION_PRED_STEPS: 3
+    WINDOW_STRIDE: 64
+    WINDOW_PHASE: grid
+    GAP_SET: [4, 8, 16, 32, 64, 120]
+    CAMERAS: ['pixels', 'pixels_wrist']
+    SPLIT: val
+    TRAIN_RATIO: 0.9
+    STRATIFY: True
+    SEED: 3072
+    CROSS_EP_MIN_LANG_DIST: 0.3
+    LATER_WINDOW: True
+    LATER_WINDOW_END: frame
+    FUTURE_STATES: True
+
+DATA_PRESET:
+  IMAGE_SIZE: 128
+
+MODEL:
+  TYPE: SeerPolicyModel
+  HEAD: ppp
+  ACTION_STATS_H5: assets/latent_extract/libero/libero_full_consolidated.h5
+  SEER:
+    MAE_CKPT: checkpoints/vit_mae/mae_pretrain_vit_base.pth
+    CLIP_TEXT: assets/seer/clip_text_libero.npz
+    ACTION_UNITS: raw
+    SEQ_LEN: 7
+    FUTURE_STEPS: 3
+    ACTION_PRED_STEPS: 3
+    NUM_RESAMPLER_QUERY: 6
+    NUM_OBS_TOKEN_PER_IMAGE: 9
+    TRANSFORMER_LAYERS: 24
+    HIDDEN_DIM: 384
+    TRANSFORMER_HEADS: 12
+    RGB_PAD: 10
+    GRIPPER_PAD: 4
+    GPT_DROPOUT: 0.1
+    PPP_STATE: trunk
+  STATE_WM:
+    LAYERS: 4
+    HEADS: 12
+    MLP_RATIO: 4
+    OUT_SCALE: 0.1
+  LOSS:
+    IMAGE: 0.1
+    LATENT: 1.0
+    LAMBDA_MC: 1.0
+    LAMBDA_RANK: 0.5
+    RANK_TAU: 0.05
+    LAMBDA_BOUNDARY: 1.0
+    TERMINAL_THRESH: 0.95
+    NONTERMINAL_EPS: 0.05
+    LAMBDA_LANG: 0.5
+    LANG_MARGIN: 0.2
+    LAMBDA_TD: 1.0
+    LAMBDA_ACT: 1.0
+    LAMBDA_VEC: 1.0
+    LAMBDA_DIR: 1.0
+    LAMBDA_GRIP: 10.0
+    ACT_TARGET: per_tick
+    ACT_SPACE: raw
+  PROGRESS:
+    HIDDEN_DIM: 1024
+    NUM_LAYERS: 4
+    FILM_HIDDEN: 256
+    DROPOUT: 0.0
+  GEOM:
+    HIDDEN_DIM: 256
+    NUM_LAYERS: 2
+    EPS: 1.0e-3
+  GRIPPER_FIELD:
+    TAU_STEPS: 0.5
+    TOL_EARLY:
+      CLOSE: 2
+      OPEN: 4
+    DWELL: true
+    BALANCE: true
+    ISOLATE: false
+  ACT_FORECAST_GRAD: 0.3
+  ACT_TRUNK_GRAD: 0.03
+  STAGES:
+    STAGE2_START_EPOCH: 1
+
+TRAIN:
+  MANUAL_SEED: 3072
+  LOG_INTERVAL: 20
+  VAL_LOG_INTERVAL: 20
+  CONV_REPEATABLE: true
+  BATCH_SIZE: 512
+  GRAD_ACCUM: 8
+  EPOCH: 50
+  OPTIMIZER: AdamW
+  LR: 1.0e-3
+  HEAD_LR: 3.0e-4
+  WEIGHT_DECAY: 1.0e-4
+  SCHEDULER: LinearWarmupCosineAnnealingLR
+  SCHEDULER_INTERVAL: step
+  WARMUP_EPOCHS: 5
+  ETA_MIN: 0.0
+  GRAD_CLIP_ENABLED: true
+  GRAD_CLIP:
+    TYPE: 2
+    NORM: 0.1
+    MODE: global_every_backward
+    READOUT:
+      MODE: per_tensor
+      NORM: 1.0
+  FIND_UNUSED_PARAMETERS: false

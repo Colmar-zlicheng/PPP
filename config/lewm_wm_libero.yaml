@@ -1,0 +1,76 @@
+DATASET:
+  TRAIN:
+    TYPE: LiberoLeWMDataset
+    TIMING_CONTRACT: post_action_v1
+    DATA_ROOT: assets/latent_extract/libero/libero_full_consolidated.h5
+    NUM_STEPS: 4
+    FRAMESKIP: 4
+    SPLIT_MODE: ratio
+    SPLIT: all
+    TRAIN_RATIO: 0.9
+    SEED: 3072
+    STRATIFY: True
+    CAMERAS: ['pixels', 'pixels_wrist']
+    IN_MEMORY: True
+    SHM_CACHE: True
+    ACTION_SOURCE: osc
+    NORMALIZE_ACTIONS: True
+  TEST:
+    TYPE: LiberoLeWMDataset
+    TIMING_CONTRACT: post_action_v1
+    DATA_ROOT: assets/latent_extract/libero/libero_full_consolidated.h5
+    NUM_STEPS: 4
+    FRAMESKIP: 4
+    SPLIT_MODE: ratio
+    SPLIT: val
+    TRAIN_RATIO: 0.9
+    SEED: 3072
+    STRATIFY: True
+    CAMERAS: ['pixels', 'pixels_wrist']
+    IN_MEMORY: True
+    SHM_CACHE: True
+    ACTION_SOURCE: osc
+    NORMALIZE_ACTIONS: True
+
+DATA_PRESET:
+  IMAGE_SIZE: 128
+  PATCH_SIZE: 16
+
+MODEL:
+  TYPE: LeWM
+  PRETRAINED: null
+  NUM_CAMERAS: 2
+  EMBED_DIM: 384
+  HISTORY_SIZE: 3
+  NUM_PREDS: 1
+  ACTION_DIM: 7
+  FRAMESKIP: 4
+  ENCODER_HIDDEN_SIZE: 384
+  PREDICTOR_DEPTH: 6
+  PREDICTOR_HEADS: 16
+  PREDICTOR_MLP_DIM: 2048
+  PREDICTOR_DIM_HEAD: 64
+  PREDICTOR_DROPOUT: 0.1
+  LOSS:
+    SIGREG_WEIGHT: 0.09
+
+TRAIN:
+  MANUAL_SEED: 3072
+  LOG_INTERVAL: 10
+  VAL_LOG_INTERVAL: 100
+  COLLAPSE_LOG_INTERVAL: 50
+  JACOBIAN_LOG_INTERVAL: 50
+  CONV_REPEATABLE: True
+  BATCH_SIZE: 512
+  EPOCH: 100
+  OPTIMIZER: AdamW
+  LR: 5.0e-5
+  WEIGHT_DECAY: 1.0e-3
+  SCHEDULER: LinearWarmupCosineAnnealingLR
+  WARMUP_EPOCHS: 5
+  ETA_MIN: 0.0
+  GRAD_CLIP_ENABLED: True
+  GRAD_CLIP:
+    TYPE: 2
+    NORM: 1.0
+  FIND_UNUSED_PARAMETERS: False
