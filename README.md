@@ -10,7 +10,7 @@
 <h3 align="center">
   <a href="https://zlicheng.com/ppp_page/"><strong>Project Page</strong></a>
   |
-  <a href="http://arxiv.org/#"><strong>arXiv</strong></a>
+  <a href="https://arxiv.org/abs/2611.22491"><strong>arXiv</strong></a>
   |
   <a href="https://huggingface.co/zlicheng/PPP"><strong>HuggingFace</strong></a>
 </h3>
@@ -66,7 +66,7 @@ under CC BY-NC 4.0.
 @article{zhong2026ppp,
     title       = {Progress Predicts Policy},
     author      = {Zhong, Licheng and Lee, Gim Hee},
-    journal     = {arXiv preprint arXiv},
+    journal     = {arXiv preprint arXiv:2611.22491},
     year        = {2026}
 }
 ```
